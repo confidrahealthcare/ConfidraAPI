@@ -1,0 +1,11 @@
+D:\ConfidraApi\Common\bin\Debug\net10.0\ConfidraApi.Common.deps.json
+D:\ConfidraApi\Common\bin\Debug\net10.0\ConfidraApi.Common.dll
+D:\ConfidraApi\Common\bin\Debug\net10.0\ConfidraApi.Common.pdb
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.GeneratedMSBuildEditorConfig.editorconfig
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.AssemblyInfoInputs.cache
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.AssemblyInfo.cs
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.csproj.CoreCompileInputs.cache
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.dll
+D:\ConfidraApi\Common\obj\Debug\net10.0\refint\ConfidraApi.Common.dll
+D:\ConfidraApi\Common\obj\Debug\net10.0\ConfidraApi.Common.pdb
+D:\ConfidraApi\Common\obj\Debug\net10.0\ref\ConfidraApi.Common.dll

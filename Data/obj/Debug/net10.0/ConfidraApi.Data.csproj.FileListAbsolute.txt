@@ -1,0 +1,15 @@
+D:\ConfidraApi\Data\bin\Debug\net10.0\ConfidraApi.Data.deps.json
+D:\ConfidraApi\Data\bin\Debug\net10.0\ConfidraApi.Data.dll
+D:\ConfidraApi\Data\bin\Debug\net10.0\ConfidraApi.Data.pdb
+D:\ConfidraApi\Data\bin\Debug\net10.0\ConfidraApi.Common.dll
+D:\ConfidraApi\Data\bin\Debug\net10.0\ConfidraApi.Common.pdb
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.csproj.AssemblyReference.cache
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.AssemblyInfoInputs.cache
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.AssemblyInfo.cs
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.csproj.CoreCompileInputs.cache
+D:\ConfidraApi\Data\obj\Debug\net10.0\Confidra.DC64FF89.Up2Date
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.dll
+D:\ConfidraApi\Data\obj\Debug\net10.0\refint\ConfidraApi.Data.dll
+D:\ConfidraApi\Data\obj\Debug\net10.0\ConfidraApi.Data.pdb
+D:\ConfidraApi\Data\obj\Debug\net10.0\ref\ConfidraApi.Data.dll

@@ -1,0 +1,20 @@
+## Visual Studio / .NET
+/.vs/
+# NuGet
+*.nupkg
+packages/
+# Rider
+.idea/
+/*.sln.iml
+
+# OS
+Thumbs.db
+desktop.ini
+*.DS_Store
+
+# Logs
+*.log
+
+# Build outputs
+publish/
+*.publishsettings

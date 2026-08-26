@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "ConfidraApi.Business/1.0.0": {
+        "dependencies": {
+          "ConfidraApi.Common": "1.0.0",
+          "ConfidraApi.Data": "1.0.0"
+        },
+        "runtime": {
+          "ConfidraApi.Business.dll": {}
+        }
+      },
+      "ConfidraApi.Common/1.0.0": {
+        "runtime": {
+          "ConfidraApi.Common.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ConfidraApi.Data/1.0.0": {
+        "dependencies": {
+          "ConfidraApi.Common": "1.0.0"
+        },
+        "runtime": {
+          "ConfidraApi.Data.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ConfidraApi.Business/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ConfidraApi.Common/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ConfidraApi.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

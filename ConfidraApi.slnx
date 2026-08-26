@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Business/">
+    <Project Path="Business/ConfidraApi.Business.csproj" />
+  </Folder>
+  <Folder Name="/Common/">
+    <Project Path="Common/ConfidraApi.Common.csproj" />
+  </Folder>
+  <Folder Name="/Data/">
+    <Project Path="Data/ConfidraApi.Data.csproj" />
+  </Folder>
+  <Project Path="ConfidraApi.csproj" />
+</Solution>
