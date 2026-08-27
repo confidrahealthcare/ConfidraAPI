@@ -6,6 +6,7 @@ builder.Services.AddCors(options => options.AddPolicy("Frontend", policy => poli
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<RazorpayService>(client => client.BaseAddress = new Uri("https://api.razorpay.com/v1/"));
 builder.Services.AddBusinessServices(builder.Configuration);
 
 var app = builder.Build();

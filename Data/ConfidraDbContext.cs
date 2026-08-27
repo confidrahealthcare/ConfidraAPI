@@ -31,6 +31,7 @@ public sealed class ConfidraDbContext(DbContextOptions<ConfidraDbContext> option
             entity.Property(request => request.FullName).HasMaxLength(150).IsRequired();
             entity.Property(request => request.Phone).HasMaxLength(30).IsRequired();
             entity.Property(request => request.Email).HasMaxLength(320).IsRequired();
+            entity.Property(request => request.PlanName).HasMaxLength(100);
             entity.Property(request => request.CreatedUtc).IsRequired();
             entity.HasIndex(request => request.CreatedUtc);
         });

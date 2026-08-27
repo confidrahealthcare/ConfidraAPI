@@ -28,6 +28,7 @@ public sealed class ConsultationService(IConsultationRequestRepository repositor
             FullName = fullName,
             Phone = phone,
             Email = email,
+            PlanName = string.IsNullOrWhiteSpace(input.PlanName) ? null : input.PlanName.Trim(),
             CreatedUtc = DateTime.UtcNow
         }, cancellationToken);
 
