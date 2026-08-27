@@ -39,4 +39,46 @@ public sealed class AuthController(AuthService authService) : ControllerBase
 
         return Ok(result.User);
     }
+
+    [HttpPost("password-reset/request")]
+    public async Task<IActionResult> RequestPasswordReset(
+        [FromBody] PasswordResetRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await authService.RequestPasswordResetAsync(request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ProblemDetails { Detail = result.Error });
+        }
+
+        return Ok(new { message = "A password reset code was sent to your email." });
+    }
+
+    [HttpPost("password-reset/verify")]
+    public async Task<IActionResult> VerifyPasswordResetOtp(
+        [FromBody] VerifyPasswordResetOtpRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await authService.VerifyPasswordResetOtpAsync(request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ProblemDetails { Detail = result.Error });
+        }
+
+        return Ok(new { message = "The code is valid." });
+    }
+
+    [HttpPost("password-reset/complete")]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await authService.ResetPasswordAsync(request, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new ProblemDetails { Detail = result.Error });
+        }
+
+        return Ok(new { message = "Your password was updated. You can now log in." });
+    }
 }

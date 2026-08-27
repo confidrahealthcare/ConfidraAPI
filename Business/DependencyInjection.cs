@@ -14,6 +14,7 @@ public static class DependencyInjection
     {
         services.AddDataServices(configuration);
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<AuthService>();
 
         return services;

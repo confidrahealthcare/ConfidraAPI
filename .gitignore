@@ -16,5 +16,7 @@ desktop.ini
 *.log
 
 # Build outputs
+bin/
+obj/
 publish/
 *.publishsettings

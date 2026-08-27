@@ -18,6 +18,7 @@ public sealed class ConfidraDbContext(DbContextOptions<ConfidraDbContext> option
             entity.Property(user => user.Phone).HasMaxLength(30).IsRequired();
             entity.Property(user => user.PasswordHash).HasMaxLength(500).IsRequired();
             entity.Property(user => user.CreatedUtc).IsRequired();
+            entity.Property(user => user.PasswordResetOtpHash).HasMaxLength(64);
             entity.HasIndex(user => user.Email).IsUnique();
             entity.HasIndex(user => user.Phone).IsUnique();
         });

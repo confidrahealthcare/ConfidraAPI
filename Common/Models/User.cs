@@ -8,4 +8,6 @@ public sealed class User
     public string Phone { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime CreatedUtc { get; set; }
+    public string? PasswordResetOtpHash { get; set; }
+    public DateTime? PasswordResetOtpExpiresUtc { get; set; }
 }

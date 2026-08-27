@@ -16,8 +16,22 @@ BEGIN
         [Email] NVARCHAR(320) NOT NULL,
         [Phone] NVARCHAR(30) NOT NULL,
         [PasswordHash] NVARCHAR(500) NOT NULL,
-        [CreatedUtc] DATETIME2(7) NOT NULL CONSTRAINT [DF_Users_CreatedUtc] DEFAULT (SYSUTCDATETIME())
+        [CreatedUtc] DATETIME2(7) NOT NULL CONSTRAINT [DF_Users_CreatedUtc] DEFAULT (SYSUTCDATETIME()),
+        [PasswordResetOtpHash] NVARCHAR(64) NULL,
+        [PasswordResetOtpExpiresUtc] DATETIME2(7) NULL
     );
+END;
+GO
+
+IF COL_LENGTH(N'[dbo].[Users]', N'PasswordResetOtpHash') IS NULL
+BEGIN
+    ALTER TABLE [dbo].[Users] ADD [PasswordResetOtpHash] NVARCHAR(64) NULL;
+END;
+GO
+
+IF COL_LENGTH(N'[dbo].[Users]', N'PasswordResetOtpExpiresUtc') IS NULL
+BEGIN
+    ALTER TABLE [dbo].[Users] ADD [PasswordResetOtpExpiresUtc] DATETIME2(7) NULL;
 END;
 GO
 
