@@ -1,6 +1,7 @@
 using ConfidraApi.Common.Models;
 using ConfidraApi.Data;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -89,7 +90,24 @@ public sealed class AuthService(
         user.PasswordResetOtpHash = HashOtp(otp);
         user.PasswordResetOtpExpiresUtc = DateTime.UtcNow.AddMinutes(10);
         await userRepository.SaveAsync(cancellationToken);
-        await emailSender.SendPasswordResetOtpAsync(user.Email, otp, cancellationToken);
+        try
+        {
+            await emailSender.SendPasswordResetOtpAsync(user.Email, otp, cancellationToken);
+        }
+        catch (InvalidOperationException)
+        {
+            user.PasswordResetOtpHash = null;
+            user.PasswordResetOtpExpiresUtc = null;
+            await userRepository.SaveAsync(cancellationToken);
+            return (false, "Password reset email is not configured. Add the SMTP settings and try again.");
+        }
+        catch (SmtpException)
+        {
+            user.PasswordResetOtpHash = null;
+            user.PasswordResetOtpExpiresUtc = null;
+            await userRepository.SaveAsync(cancellationToken);
+            return (false, "The password reset email could not be sent. Check the SMTP settings and try again.");
+        }
 
         return (true, null);
     }

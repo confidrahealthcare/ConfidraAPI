@@ -24,20 +24,23 @@ public sealed class SmtpEmailSender(IConfiguration configuration) : IEmailSender
 {
     private readonly SmtpOptions settings = new()
     {
-        Host = configuration["Smtp:Host"] ?? string.Empty,
-        Port = int.TryParse(configuration["Smtp:Port"], out var port) ? port : 587,
-        Username = configuration["Smtp:Username"] ?? string.Empty,
-        Password = configuration["Smtp:Password"] ?? string.Empty,
-        FromEmail = configuration["Smtp:FromEmail"] ?? string.Empty,
-        FromName = configuration["Smtp:FromName"] ?? "Confidra",
-        EnableSsl = !bool.TryParse(configuration["Smtp:EnableSsl"], out var enableSsl) || enableSsl
+        Host = Read(configuration, "Smtp:Host", "EmailSettings:SmtpHost"),
+        Port = int.TryParse(Read(configuration, "Smtp:Port", "EmailSettings:SmtpPort"), out var port) ? port : 587,
+        Username = Read(configuration, "Smtp:Username", "EmailSettings:Username"),
+        Password = Read(configuration, "Smtp:Password", "EmailSettings:Password"),
+        FromEmail = Read(configuration, "Smtp:FromEmail", "EmailSettings:FromEmail"),
+        FromName = Read(configuration, "Smtp:FromName", "EmailSettings:FromName", "Confidra"),
+        EnableSsl = !bool.TryParse(Read(configuration, "Smtp:EnableSsl", "EmailSettings:UseStartTls"), out var enableSsl) || enableSsl
     };
+
+    private static string Read(IConfiguration configuration, string primaryKey, string fallbackKey, string defaultValue = "") =>
+        configuration[primaryKey] ?? configuration[fallbackKey] ?? defaultValue;
 
     public async Task SendPasswordResetOtpAsync(string recipient, string otp, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(settings.Host) || string.IsNullOrWhiteSpace(settings.FromEmail))
         {
-            throw new InvalidOperationException("SMTP is not configured. Set the Smtp section in appsettings.Development.json.");
+            throw new InvalidOperationException("SMTP is not configured. Set the Smtp or EmailSettings section in appsettings.Development.json.");
         }
 
         using var message = new MailMessage

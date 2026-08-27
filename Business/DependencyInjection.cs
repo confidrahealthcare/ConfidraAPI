@@ -16,6 +16,8 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<AuthService>();
+        services.AddScoped<ConsultationService>();
+        services.AddScoped<StatsService>();
 
         return services;
     }

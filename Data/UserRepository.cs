@@ -32,4 +32,6 @@ public sealed class UserRepository(ConfidraDbContext dbContext) : IUserRepositor
     }
 
     public Task SaveAsync(CancellationToken cancellationToken) => dbContext.SaveChangesAsync(cancellationToken);
+
+    public Task<int> CountAsync(CancellationToken cancellationToken) => dbContext.Users.CountAsync(cancellationToken);
 }

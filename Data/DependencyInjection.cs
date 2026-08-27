@@ -16,6 +16,8 @@ public static class DependencyInjection
         services.AddDbContext<ConfidraDbContext>(options =>
             options.UseSqlServer(connectionString));
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IConsultationRequestRepository, ConsultationRequestRepository>();
+        services.AddScoped<IStatsRepository, StatsRepository>();
 
         return services;
     }

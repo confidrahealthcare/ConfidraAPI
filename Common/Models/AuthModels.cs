@@ -21,3 +21,9 @@ public sealed record AuthUserResponse(
     string FullName,
     string Email,
     string Phone);
+
+public sealed record DashboardStatsResponse(
+    int PatientsOnboarded,
+    int ProgramFollowUp,
+    int RegisteredClinicians,
+    int CitiesServed);
