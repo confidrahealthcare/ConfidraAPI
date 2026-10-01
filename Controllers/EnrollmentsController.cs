@@ -1,22 +1,11 @@
-using ConfidraApi.Business;
-using ConfidraApi.Common.Models;
+using System.Security.Claims;
+using ConfidraApi.Data;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 namespace ConfidraApi.Controllers;
-
-[ApiController]
-[Route("api/enrollments")]
-public sealed class EnrollmentsController(EnrollmentService enrollmentService) : ControllerBase
+[ApiController,Route("api/enrollments")]
+public sealed class EnrollmentsController(ConfidraDbContext db):ControllerBase
 {
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateEnrollmentRequest request, CancellationToken cancellationToken)
-    {
-        var result = await enrollmentService.CreateAsync(request, cancellationToken);
-        if (!result.Succeeded)
-        {
-            return BadRequest(new ProblemDetails { Detail = result.Error });
-        }
-
-        return Ok(new { enrollmentId = result.Enrollment!.Id, expiresUtc = result.Enrollment.ExpiresUtc });
-    }
+ [HttpGet] public async Task<IActionResult> Get(CancellationToken ct){int id=int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);return Ok(await db.Enrollments.Where(x=>x.UserId==id).Select(x=>new{x.Id,x.PlanName,x.EnrolledUtc,x.ExpiresUtc}).ToListAsync(ct));}
+ [HttpPost] public IActionResult Create()=>StatusCode(410,new{message="Direct enrolment is no longer supported. Payment must be verified by the server."});
 }

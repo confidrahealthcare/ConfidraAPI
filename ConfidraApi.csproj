@@ -16,6 +16,9 @@
     <Compile Remove="Business\**\*.cs" />
     <Compile Remove="Common\**\*.cs" />
     <Compile Remove="Data\**\*.cs" />
+    <Compile Remove="tests\**\*.cs" />
+    <Content Remove="tests\**" />
+    <None Remove="tests\**" />
   </ItemGroup>
 
 

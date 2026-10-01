@@ -1,40 +1,12 @@
-using ConfidraApi.Business;
-using ConfidraApi.Common.Models;
+using System.Security.Claims;
+using ConfidraApi.Data;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.EntityFrameworkCore;
 namespace ConfidraApi.Controllers;
-
-[ApiController]
-[Route("api/appointments")]
-public sealed class AppointmentsController(AppointmentService appointmentService) : ControllerBase
+[ApiController,Route("api/appointments")]
+public sealed class AppointmentsController(ConfidraDbContext db):ControllerBase
 {
-    [HttpGet]
-    public Task<IReadOnlyList<Appointment>> GetForUser([FromQuery] int userId, CancellationToken cancellationToken) =>
-        appointmentService.GetForUserAsync(userId, cancellationToken);
-
-    [HttpPost("{appointmentId:int}/cancel")]
-    public async Task<IActionResult> Cancel(int appointmentId, [FromQuery] int userId, CancellationToken cancellationToken)
-    {
-        var result = await appointmentService.CancelAsync(appointmentId, userId, cancellationToken);
-        if (!result.Succeeded)
-        {
-            return BadRequest(new ProblemDetails { Detail = result.Error });
-        }
-
-        return Ok(new { message = result.Error });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Book(
-        [FromBody] BookAppointmentRequest request,
-        CancellationToken cancellationToken)
-    {
-        var result = await appointmentService.BookAsync(request, cancellationToken);
-        if (!result.Succeeded)
-        {
-            return BadRequest(new ProblemDetails { Detail = result.Error });
-        }
-
-        return Ok(new { message = result.Error });
-    }
+ [HttpGet] public async Task<IActionResult> Get(CancellationToken ct){int id=int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);return Ok(await db.Appointments.Where(x=>x.UserId==id).Select(x=>new{x.Id,x.AppointmentDate,x.AppointmentTime,x.DoctorName,x.Status}).ToListAsync(ct));}
+ [HttpPost] public IActionResult Book()=>StatusCode(409,new{message="Use the care team's scheduling service. App booking awaits calendar synchronization."});
+ [HttpPost("{id:int}/cancel")] public IActionResult Cancel(int id)=>StatusCode(409,new{message="Use your scheduling confirmation or contact the care team to cancel."});
 }
