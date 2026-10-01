@@ -20,3 +20,7 @@ bin/
 obj/
 publish/
 *.publishsettings
+TestResults/
+.env
+.env.*
+!.env.example
