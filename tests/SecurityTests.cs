@@ -149,11 +149,14 @@ public sealed class SecurityTests
         foreach(var purpose in new[]{"ClinicalSharing","HealthData"})await Send(patient,"/api/care/consents",new{purpose,granted=true});
         var input=new{orderId="order_activation",day0=DateOnly.FromDateTime(DateTime.UtcNow.AddMinutes(330))};
         Assert.Equal(HttpStatusCode.Conflict,(await Send(physician,$"/api/professional/patients/{pid}/enrollments",input)).StatusCode);
+        Assert.Equal(1,(await physician.GetFromJsonAsync<JsonElement>($"/api/professional/patients/{pid}/enrollments")).GetArrayLength());
+        Assert.Equal(HttpStatusCode.Forbidden,(await patient.GetAsync($"/api/professional/patients/{pid}/enrollments")).StatusCode);
         Assert.Equal(HttpStatusCode.Created,(await Send(physician,$"/api/professional/patients/{pid}/reviews",new{day=0,interpretation="Synthetic assessment only"})).StatusCode);
         Assert.Equal(HttpStatusCode.Created,(await Send(physician,$"/api/professional/patients/{pid}/enrollments",input)).StatusCode);
         Assert.Equal(HttpStatusCode.OK,(await Send(physician,$"/api/professional/patients/{pid}/enrollments",input)).StatusCode);
         Assert.Equal(1,(await patient.GetFromJsonAsync<JsonElement>("/api/enrollments")).GetArrayLength());
         await Send(patient,"/api/care/consents",new{purpose="HealthData",granted=false});Assert.Equal(HttpStatusCode.NotFound,(await physician.GetAsync($"/api/professional/patients/{pid}")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,(await physician.GetAsync($"/api/professional/patients/{pid}/enrollments")).StatusCode);
     }
     [Fact] public void PaymentSignaturesAndCatalogueUseServerValues()
     {

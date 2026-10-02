@@ -9,12 +9,14 @@ using ConfidraApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 namespace ConfidraApi.Business;
-public sealed record OrderInput([Required,MaxLength(40)]string ProgrammeId);
+public sealed record OrderInput([Required,MaxLength(40)]string ProgrammeId, bool TermsAccepted = false);
 public sealed record VerifyPaymentInput([Required,MaxLength(80)]string OrderId, [Required,MaxLength(80)]string PaymentId, [Required,RegularExpression("^[a-fA-F0-9]{64}$")]string Signature);
 public sealed class RazorpayService(IConfiguration config, HttpClient client, ConfidraDbContext db)
 {
     public static readonly IReadOnlyDictionary<string,int> Prices = new Dictionary<string,int> { ["pre-diabetes-90"] = 749900, ["diabetes-90"] = 1699900 };
     public bool Enabled => string.Equals(config["Features:Payments"], "true", StringComparison.OrdinalIgnoreCase) && (config["Razorpay:KeyId"]?.StartsWith("rzp_test_",StringComparison.Ordinal) ?? false) && !string.IsNullOrWhiteSpace(config["Razorpay:KeySecret"]);
+    public string? TermsUrl => Uri.TryCreate(config["Payments:TermsUrl"],UriKind.Absolute,out var uri) && uri.Scheme=="https" && string.IsNullOrEmpty(uri.UserInfo) ? uri.AbsoluteUri : null;
+    public bool CheckoutEnabled => Enabled && string.Equals(config["Payments:TermsApproved"],"true",StringComparison.OrdinalIgnoreCase) && TermsUrl is not null;
     private void Configure() { if(!Enabled) throw new InvalidOperationException("Payments are unavailable."); client.DefaultRequestHeaders.Authorization=new AuthenticationHeaderValue("Basic",Convert.ToBase64String(Encoding.UTF8.GetBytes(config["Razorpay:KeyId"]+":"+config["Razorpay:KeySecret"]))); }
     public static bool ValidSignature(string payload,string signature,string secret)
     {

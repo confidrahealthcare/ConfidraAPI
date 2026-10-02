@@ -11,6 +11,14 @@ public sealed record ActivationInput([Required,MaxLength(80)]string OrderId,Date
 [ApiController,Route("api/professional/patients/{patientId:int}/enrollments"),Authorize(Roles="Physician")]
 public sealed class ActivationController(ConfidraDbContext db):ControllerBase
 {
+ [HttpGet] public async Task<IActionResult> Eligible(int patientId,CancellationToken ct)
+ {
+  int id=int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+  if(!await db.CareAssignments.AnyAsync(x=>x.PatientId==patientId&&x.StaffId==id,ct))return NotFound();
+  if(await db.CareConsents.CountAsync(x=>x.UserId==patientId&&(x.Purpose=="HealthData"||x.Purpose=="ClinicalSharing")&&x.WithdrawnUtc==null,ct)!=2)return NotFound();
+  var orders=await db.PaymentRecords.Where(x=>x.UserId==patientId&&x.PaymentId!=null&&(x.Status=="CapturedPendingAssessment"||x.Status=="Active")).Select(x=>new{x.OrderId,x.Status,programmeName=x.ProgrammeId=="pre-diabetes-90"?"Pre-Diabetes 90":"Type 1 / Type 2 Diabetes 90"}).ToListAsync(ct);
+  db.AuditEvents.Add(new AuditEvent{ActorId=id,SubjectId=patientId,Action="EnrollmentEligibilityViewed",CreatedUtc=DateTime.UtcNow});await db.SaveChangesAsync(ct);return Ok(orders);
+ }
  [HttpPost] public async Task<IActionResult> Activate(int patientId,ActivationInput input,CancellationToken ct)
  {
   int id=int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
