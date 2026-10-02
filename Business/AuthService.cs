@@ -16,6 +16,7 @@ public sealed class AuthService(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
+        if (!request.AdultConfirmed) return (false, "Adult account confirmation is required.", null);
         var fullName = request.FullName.Trim();
         var email = request.Email.Trim().ToLowerInvariant();
         var phone = request.Phone.Trim();
@@ -26,9 +27,9 @@ public sealed class AuthService(
             return (false, "Full name, email, phone, and password are required.", null);
         }
 
-        if (request.Password.Length < 8)
+        if (request.Password.Length < 12 || request.Password.Length > 128)
         {
-            return (false, "Password must be at least 8 characters long.", null);
+            return (false, "Password must be between 12 and 128 characters long.", null);
         }
 
         if (await userRepository.ExistsByEmailOrPhoneAsync(email, phone, cancellationToken))
@@ -61,12 +62,18 @@ public sealed class AuthService(
             return (false, "Invalid email/phone or password.", null);
         }
 
+        if (user.LockedUntilUtc > DateTime.UtcNow) return (false, "Sign-in unavailable. Try again later.", null);
         var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
         if (result == PasswordVerificationResult.Failed)
         {
+            user.FailedLogins++;
+            if (user.FailedLogins >= 5) { user.LockedUntilUtc = DateTime.UtcNow.AddMinutes(15); user.FailedLogins = 0; }
+            await userRepository.SaveAsync(cancellationToken);
             return (false, "Invalid email/phone or password.", null);
         }
 
+        user.FailedLogins = 0; user.LockedUntilUtc = null;
+        await userRepository.SaveAsync(cancellationToken);
         return (true, null, ToResponse(user));
     }
 
@@ -86,6 +93,8 @@ public sealed class AuthService(
             return (false, "No account was found with that email.");
         }
 
+        if (user.PasswordResetOtpExpiresUtc > DateTime.UtcNow.AddMinutes(8)) return (true, null);
+        user.ResetAttempts = 0;
         var otp = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
         user.PasswordResetOtpHash = HashOtp(otp);
         user.PasswordResetOtpExpiresUtc = DateTime.UtcNow.AddMinutes(10);
@@ -124,12 +133,13 @@ public sealed class AuthService(
         ResetPasswordRequest request,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 8)
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 12 || request.NewPassword.Length > 128)
         {
-            return (false, "Password must be at least 8 characters long.");
+            return (false, "Password must be between 12 and 128 characters long.");
         }
 
         var user = await FindUserForResetAsync(request.Email, cancellationToken);
+        if (user is not null) { user.ResetAttempts++; await userRepository.SaveAsync(cancellationToken); }
         var otpResult = ValidateOtp(user, request.Otp);
         if (!otpResult.Succeeded || user is null)
         {
@@ -150,7 +160,7 @@ public sealed class AuthService(
 
     private static (bool Succeeded, string? Error) ValidateOtp(User? user, string otp)
     {
-        if (user is null || string.IsNullOrWhiteSpace(user.PasswordResetOtpHash) ||
+        if (user is null || user.ResetAttempts > 5 || string.IsNullOrWhiteSpace(user.PasswordResetOtpHash) ||
             user.PasswordResetOtpExpiresUtc is null || user.PasswordResetOtpExpiresUtc <= DateTime.UtcNow)
         {
             return (false, "That code is invalid or has expired.");

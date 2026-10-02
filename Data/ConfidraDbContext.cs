@@ -10,8 +10,38 @@ public sealed class ConfidraDbContext(DbContextOptions<ConfidraDbContext> option
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
 
+    public DbSet<CareConsent> CareConsents => Set<CareConsent>();
+    public DbSet<PatientIntake> PatientIntakes => Set<PatientIntake>();
+    public DbSet<DailyLog> DailyLogs => Set<DailyLog>();
+    public DbSet<CareAssignment> CareAssignments => Set<CareAssignment>();
+    public DbSet<ClinicalReview> ClinicalReviews => Set<ClinicalReview>();
+    public DbSet<Referral> Referrals => Set<Referral>();
+    public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
+    public DbSet<PaymentRecord> PaymentRecords => Set<PaymentRecord>();
+    public DbSet<ProviderEvent> ProviderEvents => Set<ProviderEvent>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<PatientIntake>().Property(x => x.UserId).ValueGeneratedNever();
+        modelBuilder.Entity<CareConsent>().HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<PatientIntake>().HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<DailyLog>().HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<CareAssignment>().HasOne<User>().WithMany().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<CareAssignment>().HasOne<User>().WithMany().HasForeignKey(x => x.StaffId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<ClinicalReview>().HasOne<User>().WithMany().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<ClinicalReview>().HasOne<User>().WithMany().HasForeignKey(x => x.PhysicianId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<Referral>().HasOne<User>().WithMany().HasForeignKey(x => x.ReferrerId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<PaymentRecord>().HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<User>().Property(x => x.Role).HasMaxLength(30).HasDefaultValue("Patient");
+        modelBuilder.Entity<DailyLog>().HasIndex(x => new { x.UserId, x.Date }).IsUnique();
+        modelBuilder.Entity<CareAssignment>().HasIndex(x => new { x.PatientId, x.StaffId }).IsUnique();
+        modelBuilder.Entity<PaymentRecord>().HasIndex(x => x.PaymentId).IsUnique().HasFilter("[PaymentId] IS NOT NULL");
+        modelBuilder.Entity<CareConsent>().HasIndex(x => new { x.UserId, x.Purpose }).IsUnique().HasFilter("[WithdrawnUtc] IS NULL");
+        modelBuilder.Entity<DailyLog>().Property(x => x.FastingGlucose).HasPrecision(7,2);
+        modelBuilder.Entity<DailyLog>().Property(x => x.WeightKg).HasPrecision(6,2);
+        modelBuilder.Entity<ClinicalReview>().Property(x => x.Fbs).HasPrecision(7,2);
+        modelBuilder.Entity<ClinicalReview>().Property(x => x.Ppbs).HasPrecision(7,2);
+        modelBuilder.Entity<ClinicalReview>().Property(x => x.HbA1c).HasPrecision(5,2);
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("Users");
