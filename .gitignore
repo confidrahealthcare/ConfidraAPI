@@ -1,4 +1,6 @@
 ## Visual Studio / .NET
+*.user
+*.suo
 /.vs/
 # NuGet
 *.nupkg
